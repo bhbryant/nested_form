@@ -1,11 +1,13 @@
 module NestedForm
   class Builder < ActionView::Helpers::FormBuilder
-    def link_to_add(name, association)
+    def link_to_add(name, association, args = {})
       @fields ||= {}
+      args.merge!({ :child_index => "new_#{association}"})
+
       @template.after_nested_form do
         model_object = object.class.reflect_on_association(association).klass.new
         @template.concat(%Q[<div id="#{association}_fields_blueprint" style="display: none">])
-        fields_for(association, model_object, :child_index => "new_#{association}", &@fields[association])
+        fields_for(association, model_object, args, &@fields[association])
         @template.concat('</div>')
       end
       @template.link_to(name, "javascript:void(0)", :class => "add_nested_fields", "data-association" => association)
@@ -22,10 +24,13 @@ module NestedForm
     end
 
     
-    def fields_for_nested_model(name, association, args, block)
-      @template.concat('<div class="fields">')
+
+   def fields_for_nested_model(name, association, args, block)
+      arg_hash = args.find {|a| a[:tag]}
+      tag = arg_hash.nil? ? "div" : arg_hash[:tag]
+      @template.concat("<#{tag} class=\"fields\">")
       super
-      @template.concat('</div>')
+      @template.concat("</#{tag}>")
     end
   end
 end

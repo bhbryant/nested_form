@@ -31,5 +31,21 @@ describe NestedForm::Builder do
       @builder.link_to_add("Add", :tasks)
       @template.output_buffer.should == '<div id="tasks_fields_blueprint" style="display: none"><div class="fields">Task</div></div>'
     end
+    
+    it "should add task fields to hidden div after form if :tag => 'li' specified" do
+      mock(@template).after_nested_form { |block| block.call }
+      @builder.fields_for(:tasks, :tag => "li") { @template.concat("Task") }
+      @builder.link_to_add("Add", :tasks, :tag => "li" )
+      @template.output_buffer.should == '<div id="tasks_fields_blueprint" style="display: none"><li class="fields">Task</li></div>'
+    end
+    
+    it "should wrap nested fields each in a li with class if :tag => 'li' " do
+      2.times { @project.tasks.build }
+      @builder.fields_for(:tasks, :tag => "li") do
+        @template.concat("Task")
+      end
+      @template.output_buffer.should == '<li class="fields">Task</li><li class="fields">Task</li>'
+    end
+    
   end
 end

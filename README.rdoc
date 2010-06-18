@@ -40,6 +40,18 @@ It is often desirable to move the nested fields into a partial to keep things or
 
 In this case it will look for a partial called "task_fields" and pass the form builder as an f variable to it.
 
+== Arguments
+
+Wrapping tag
+
+Default operation is to wrap field in div tag. Alternate tags can be specified, by adding the tag argument to the fields_for and link_to_add. 
+
+  <% f.fields_for :tasks, :tag => 'li'  do |task_form| %>
+    <%= task_form.text_field :name %>
+    <%= task_form.link_to_remove "Remove this task" %>
+  <% end %>
+  <%= f.link_to_add "Add a task", :tasks, :tag => 'li' %>
+  
 
 == Special Thanks
 
